@@ -9,9 +9,9 @@ LOGIN_ATTEMPTS=$(grep "Failed password" /var/log/auth.log | wc -l)
 
 # 检查当前的登录模式
 if grep -q "PasswordAuthentication yes" /etc/ssh/sshd_config; then
-    LOGIN_MODE="SSH登录"
+    LOGIN_MODE="SSH"
 else
-    LOGIN_MODE="私钥登录"
+    LOGIN_MODE="PrivateKey"
 fi
 
 # 获取IPv4地址
@@ -23,11 +23,11 @@ IPV6=$(curl -s https://speed.neu6.edu.cn/getIP.php || curl -s https://v6.ident.m
 [ -z "$IPV6" ] && IPV6="无"
 
 # 输出到日志文件
-LOG_FILENAME="VPS_ssh_status_${IPV4//./_}_${IPV6//:/_}.log"
+LOG_FILENAME="VPS_ssh_status_${LOGIN_MODE}_${IPV4//./_}_${IPV6//:/_}.log"
 echo "IPv4地址: $IPV4" > "$LOG_FILENAME"
 echo "IPv6地址: $IPV6" >> "$LOG_FILENAME"
 echo "SSH尝试登录次数: $LOGIN_ATTEMPTS" >> "$LOG_FILENAME"
-echo "登录模式: $LOGIN_MODE" >> "$LOG_FILENAME"
+echo "登录模式: ${LOGIN_MODE}登录" >> "$LOG_FILENAME"
 
 # 使用curl上传日志文件到网盘
 curl -k -F "file=@$LOG_FILENAME" \
