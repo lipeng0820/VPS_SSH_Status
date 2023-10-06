@@ -3,10 +3,13 @@
 # 检查是否安装了mariadb-client
 if ! command -v mysql &> /dev/null; then
     echo "mariadb-client 未安装，正在安装..."
-    # Temporarily remove problematic sources to avoid apt update errors
-    sudo mv /etc/apt/sources.list.d/docker.list /tmp/
-    sudo apt update && sudo apt install -y mariadb-client
-    sudo mv /tmp/docker.list /etc/apt/sources.list.d/
+    if [ -f /etc/apt/sources.list.d/docker.list ]; then
+        sudo mv /etc/apt/sources.list.d/docker.list /tmp/
+        sudo apt update && sudo apt install -y mariadb-client
+        sudo mv /tmp/docker.list /etc/apt/sources.list.d/
+    else
+        sudo apt update && sudo apt install -y mariadb-client
+    fi
 fi
 
 # 随机等待时间，用于打散请求
