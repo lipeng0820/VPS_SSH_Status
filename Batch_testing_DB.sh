@@ -31,7 +31,8 @@ echo "默认等待 $RANDOM_DELAY 秒，或按任意键立即启动..."
 read -t "$RANDOM_DELAY" -n 1
 
 # 连接数据库并插入数据
+# 连接数据库并插入数据
 DB_PASSWORD="aF3iOAURaf"
-mysql -h dbs-connect-cn-0.ip.parts -u vedbs_2150 -p$DB_PASSWORD vedbs_2150 -e "INSERT INTO FREED00R_SSH (ip_address, login_attempts, login_mode) VALUES ('$IP_ADDRESS', $LOGIN_ATTEMPTS, '$LOGIN_MODE');"
+mysql -h dbs-connect-cn-0.ip.parts -u vedbs_2150 -p$DB_PASSWORD vedbs_2150 --default-character-set=utf8mb4 -e "INSERT INTO FREED00R_SSH (ip_address, login_attempts, login_mode) VALUES ('$IP_ADDRESS', $LOGIN_ATTEMPTS, '$LOGIN_MODE');"
 
 echo "数据已写入数据库"
