@@ -3,14 +3,39 @@
 # 检查并安装 mariadb-client
 if ! command -v mysql &> /dev/null; then
     echo "mariadb-client 未安装，正在安装..."
-    sudo apt update && sudo apt install -y mariadb-client
+
+    # 检测操作系统
+    if [ -f /etc/os-release ]; then
+        . /etc/os-release
+        OS=$ID
+    else
+        echo "无法检测操作系统类型."
+        exit 1
+    fi
+
+    case $OS in
+        "ubuntu"|"debian")
+            sudo apt update && sudo apt install -y mariadb-client
+            ;;
+        "centos"|"fedora"|"rhel")
+            if [ "$OS" = "centos" ] && [ "$VERSION_ID" -eq 7 ]; then
+                sudo yum install -y mariadb
+            else
+                sudo dnf install -y mariadb
+            fi
+            ;;
+        *)
+            echo "不支持的操作系统."
+            exit 1
+            ;;
+    esac
 fi
 
 # 获取系统当前的SSH尝试登录次数
-LOGIN_ATTEMPTS=$(grep "Failed password" /var/log/auth.log | wc -l)
+LOGIN_ATTEMPTS=$(grep "Failed password" /var/log/auth.log 2>/dev/null | wc -l)
 
 # 检查当前的登录模式
-if grep -q "PasswordAuthentication yes" /etc/ssh/sshd_config; then
+if grep -q "PasswordAuthentication yes" /etc/ssh/sshd_config 2>/dev/null; then
     LOGIN_MODE="SSH登录"
 else
     LOGIN_MODE="私钥登录"
