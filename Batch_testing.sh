@@ -1,7 +1,8 @@
 #!/bin/bash
 
-# 随机等待0-180秒来避免31台服务器同时请求
-sleep $(( RANDOM % 181 ))
+echo "按下任意键立即开始执行脚本，或等待随机时间执行..."
+# 读取用户输入，超时时间设置为随机的0-180秒
+read -t $(( RANDOM % 181 )) -n 1
 
 # 获取系统当前的SSH尝试登录次数
 LOGIN_ATTEMPTS=$(grep "Failed password" /var/log/auth.log | wc -l)
