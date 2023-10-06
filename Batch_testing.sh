@@ -33,7 +33,7 @@ SSH尝试登录次数: $SSH_ATTEMPTS
 
 API_OPTION="paste"
 API_PASTE_NAME="VPS_SSH_Status_$(echo $IPV4 | tr '.' '_')"
-API_PASTE_EXPIRE_DATE="1H"
+API_PASTE_EXPIRE_DATE="1D"
 API_PASTE_PRIVATE="1"
 
 # 上传到Pastebin
