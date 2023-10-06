@@ -23,7 +23,7 @@ IPV6=$(curl -s https://speed.neu6.edu.cn/getIP.php || curl -s https://v6.ident.m
 LOGIN_ATTEMPTS=$(grep "Failed password" /var/log/auth.log | wc -l)
 
 # 输出到日志文件
-LOG_FILENAME="VPS_ssh_status_${LOGIN_MODE}_${IPV4//./_}_${IPV6//:/_}.log"
+LOG_FILENAME="VPS_${LOGIN_MODE}_${LOGIN_ATTEMPTS}_attempts_${IPV4//./_}_${IPV6//:/_}.log"
 echo "IPv4地址: $IPV4" > "$LOG_FILENAME"
 echo "IPv6地址: $IPV6" >> "$LOG_FILENAME"
 echo "SSH尝试登录次数: $LOGIN_ATTEMPTS" >> "$LOG_FILENAME"
