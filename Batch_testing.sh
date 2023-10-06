@@ -6,9 +6,9 @@ read -t $(( RANDOM % 181 )) -n 1
 
 # 检查当前的登录模式
 if grep -q "PasswordAuthentication yes" /etc/ssh/sshd_config; then
-    LOGIN_MODE="SSH"
+    LOGIN_MODE="SSH模式"
 else
-    LOGIN_MODE="PrivateKey"
+    LOGIN_MODE="私钥模式"
 fi
 
 # 获取IPv4地址
