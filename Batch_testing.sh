@@ -1,26 +1,30 @@
 #!/bin/bash
 
-# 获取系统当前的SSH尝试登录次数
-LOGIN_ATTEMPTS=$(grep "Failed password" /var/log/auth.log | wc -l)
+# 获取IP地址
+IP_ADDRESS=$(curl -s ifconfig.me)
 
-# 检查当前的登录模式
+# 获取SSH登录尝试的次数
+SSH_ATTEMPTS=$(grep "Failed password" /var/log/auth.log | wc -l)
+
+# 检查登录模式
 if grep -q "PasswordAuthentication yes" /etc/ssh/sshd_config; then
     LOGIN_MODE="SSH登录"
 else
     LOGIN_MODE="私钥登录"
 fi
 
-# 获取公共IP地址
-IP_ADDR=$(curl -sSL http://httpbin.org/ip | grep -oP '"origin": "\K[^"]+')
+# 创建日志
+LOG_CONTENT="IP地址: $IP_ADDRESS
+SSH尝试登录次数: $SSH_ATTEMPTS
+登录模式: $LOGIN_MODE"
 
-# 输出到日志文件
-echo "IP地址: $IP_ADDR" > "VPS_ssh_status_${IP_ADDR//./_}.log"
-echo "SSH尝试登录次数: $LOGIN_ATTEMPTS" >> "VPS_ssh_status_${IP_ADDR//./_}.log"
-echo "登录模式: $LOGIN_MODE" >> "VPS_ssh_status_${IP_ADDR//./_}.log"
+# 将日志上传到Pastebin
+API_KEY="0351ffead849217e8338e771eb5b3dbd"
+PASTE_NAME="VPS_Log_$IP_ADDRESS"
 
-# 使用curl上传日志文件到网盘
-curl -k -F "file=@VPS_ssh_status_${IP_ADDR//./_}.log" \
-    -F "token=vy7v4ahy1uwt1witoqdv" \
-    -F "model=2" \
-    -F "mrid=65203924949e3" \
-    -X POST "https://tmp-cli.vx-cdn.com/app/upload_cli"
+# 使用Pastebin的API上传日志
+PASTE_URL=$(curl -s -X POST -d "api_dev_key=$API_KEY" -d "api_option=paste" -d "api_paste_name=$PASTE_NAME" -d "api_paste_code=$LOG_CONTENT" https://pastebin.com/api/api_post.php)
+
+# 显示上传结果
+echo "日志已上传。您可以在以下URL查看它："
+echo "$PASTE_URL"
