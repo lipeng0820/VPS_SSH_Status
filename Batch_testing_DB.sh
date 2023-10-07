@@ -1,35 +1,50 @@
 #!/bin/bash
 
-# 检查并安装 mariadb-client
-if ! command -v mysql &> /dev/null; then
-    echo "mariadb-client 未安装，正在安装..."
+# 检测操作系统并安装 sudo 和 mariadb-client
+if [ -f /etc/os-release ]; then
+    . /etc/os-release
+    OS=$ID
+else
+    echo "无法检测操作系统类型."
+    exit 1
+fi
 
-    # 检测操作系统
-    if [ -f /etc/os-release ]; then
-        . /etc/os-release
-        OS=$ID
-    else
-        echo "无法检测操作系统类型."
-        exit 1
-    fi
-
-    case $OS in
-        "ubuntu"|"debian")
+case $OS in
+    "ubuntu"|"debian")
+        # 检查并尝试安装 sudo
+        if ! command -v sudo &> /dev/null; then
+            echo "sudo 命令未安装，正在尝试安装..."
+            apt update && apt install -y sudo
+        fi
+        
+        # 检查并尝试安装 mariadb-client
+        if ! command -v mysql &> /dev/null; then
+            echo "mariadb-client 未安装，正在尝试安装..."
             sudo apt update && sudo apt install -y mariadb-client
-            ;;
-        "centos"|"fedora"|"rhel")
+        fi
+        ;;
+    "centos"|"fedora"|"rhel")
+        # 检查并尝试安装 sudo
+        if ! command -v sudo &> /dev/null; then
+            echo "sudo 命令未安装，正在尝试安装..."
+            yum install -y sudo
+        fi
+        
+        # 检查并尝试安装 mariadb-client
+        if ! command -v mysql &> /dev/null; then
+            echo "mariadb-client 未安装，正在尝试安装..."
             if [ "$OS" = "centos" ] && [ "$VERSION_ID" -eq 7 ]; then
                 sudo yum install -y mariadb
             else
                 sudo dnf install -y mariadb
             fi
-            ;;
-        *)
-            echo "不支持的操作系统."
-            exit 1
-            ;;
-    esac
-fi
+        fi
+        ;;
+    *)
+        echo "不支持的操作系统."
+        exit 1
+        ;;
+esac
 
 # 获取系统当前的SSH尝试登录次数
 LOGIN_ATTEMPTS=$(grep "Failed password" /var/log/auth.log 2>/dev/null | wc -l)
